@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EMPLOYER
+  EMPLOYEE
+}
+
+model User {
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  phone              String?        @unique
+  password           String
+  role               Role           @default(EMPLOYEE)
+  isVerified         Boolean        @default(false)
+  profile            Profile?
+  orgs               OrgMember[]
+  organizationsOwned Organization[] @relation("UserOrganizationsOwned")
+  applications       Application[]
+  refreshTokens      RefreshToken[]
+  otpCodes           OtpCode[]
+  createdAt          DateTime       @default(now())
+}
+
+model Profile {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @unique
+  name       String
+  headline   String?
+  skills     String[] @default([])
+  resumeJson Json?
+}
+
+model Organization {
+  id        String      @id @default(uuid())
+  name      String
+  owner     User        @relation("UserOrganizationsOwned", fields: [ownerId], references: [id]) // ✅ same name
+  ownerId   String
+  members   OrgMember[]
+  jobs      Job[]
+  payments  Payment[]
+  createdAt DateTime    @default(now())
+}
+
+model OrgMember {
+  id     String       @id @default(uuid())
+  user   User         @relation(fields: [userId], references: [id])
+  userId String
+  org    Organization @relation(fields: [orgId], references: [id])
+  orgId  String
+  role   String       @default("member")
+}
+
+model Job {
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  location     String?
+  type         String?
+  org          Organization  @relation(fields: [orgId], references: [id])
+  orgId        String
+  applications Application[]
+  createdAt    DateTime      @default(now())
+}
+
+model Application {
+  id          String   @id @default(uuid())
+  applicant   User     @relation(fields: [applicantId], references: [id])
+  applicantId String
+  job         Job      @relation(fields: [jobId], references: [id])
+  jobId       String
+  status      String   @default("PENDING")
+  coverLetter String?
+  createdAt   DateTime @default(now())
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  rid       String   @unique
+  expiresAt DateTime
+}
+
+model OtpCode {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  code      String
+  purpose   String
+  expiresAt DateTime
+  consumed  Boolean  @default(false)
+}
+
+model Payment {
+  id              String       @id @default(uuid())
+  org             Organization @relation(fields: [orgId], references: [id])
+  orgId           String
+  jobId           String?
+  amount          Float
+  stripeSessionId String?
+  status          String       @default("PENDING")
+  createdAt       DateTime     @default(now())
+}
