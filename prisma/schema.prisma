@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -37,7 +31,7 @@ model User {
 
 model Profile {
   id         String   @id @default(uuid())
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String   @unique
   name       String
   headline   String?
@@ -48,7 +42,7 @@ model Profile {
 model Organization {
   id        String      @id @default(uuid())
   name      String
-  owner     User        @relation("UserOrganizationsOwned", fields: [ownerId], references: [id]) // ✅ same name
+  owner     User        @relation("UserOrganizationsOwned", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId   String
   members   OrgMember[]
   jobs      Job[]
@@ -58,9 +52,9 @@ model Organization {
 
 model OrgMember {
   id     String       @id @default(uuid())
-  user   User         @relation(fields: [userId], references: [id])
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
-  org    Organization @relation(fields: [orgId], references: [id])
+  org    Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId  String
   role   String       @default("member")
 }
@@ -71,7 +65,7 @@ model Job {
   description  String
   location     String?
   type         String?
-  org          Organization  @relation(fields: [orgId], references: [id])
+  org          Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId        String
   applications Application[]
   createdAt    DateTime      @default(now())
@@ -79,9 +73,9 @@ model Job {
 
 model Application {
   id          String   @id @default(uuid())
-  applicant   User     @relation(fields: [applicantId], references: [id])
+  applicant   User     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
   applicantId String
-  job         Job      @relation(fields: [jobId], references: [id])
+  job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
   jobId       String
   status      String   @default("PENDING")
   coverLetter String?
@@ -90,7 +84,7 @@ model Application {
 
 model RefreshToken {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   rid       String   @unique
   expiresAt DateTime
@@ -98,7 +92,7 @@ model RefreshToken {
 
 model OtpCode {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
   code      String
   purpose   String
@@ -108,7 +102,7 @@ model OtpCode {
 
 model Payment {
   id              String       @id @default(uuid())
-  org             Organization @relation(fields: [orgId], references: [id])
+  org             Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
   orgId           String
   jobId           String?
   amount          Float
