@@ -9,5 +9,6 @@ export const env = z
     REDIS_URL: z.string().default("redis://redis:6379"),
     JWT_SECRET: z.string().default("supersecret"),
     STRIPE_SECRET_KEY: z.string().nonempty("STRIPE_SECRET_KEY is required"),
+    STRIPE_PUBLISHABLE_KEY: z.string().nonempty("Publishable is required"),
   })
   .parse(process.env);

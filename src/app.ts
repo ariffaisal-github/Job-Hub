@@ -9,6 +9,7 @@ import profileRoutes from "./routes/profile.routes";
 import orgRoutes from "./routes/org.routes";
 import jobRoutes from "./routes/job.routes";
 import applicationRoutes from "./routes/application.routes";
+import paymentRoutes from "./routes/payment.routes";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/org", orgRoutes);
 app.use("/api/job", jobRoutes);
 app.use("/api/application", applicationRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.use(errorHandler);
 
