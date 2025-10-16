@@ -112,7 +112,8 @@ model Payment {
   orgId           String
   jobId           String?
   amount          Float
-  stripeSessionId String?
+  stripeSessionId String?      @unique
   status          String       @default("PENDING")
+  metadata        String?
   createdAt       DateTime     @default(now())
 }

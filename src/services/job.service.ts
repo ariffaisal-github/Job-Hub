@@ -38,6 +38,12 @@ export async function createJob(ownerId: string, data: any) {
         amount,
         stripeSessionId: session.id,
         status: "PENDING",
+        metadata: JSON.stringify({
+          title: data.title,
+          description: data.description,
+          location: data.location,
+          type: data.type,
+        }),
       },
     });
 

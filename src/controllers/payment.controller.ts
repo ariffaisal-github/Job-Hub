@@ -39,16 +39,58 @@ export async function createCheckout(req: Request, res: Response) {
 
 export async function success(req: Request, res: Response) {
   const { session_id } = req.query;
-  if (!session_id) return res.status(400).send("Missing session_id");
 
-  await prisma.payment.updateMany({
-    where: { stripeSessionId: session_id as string },
-    data: { status: "SUCCESS" },
+  if (!session_id || typeof session_id !== "string") {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing session_id" });
+  }
+
+  // 1️⃣ Verify session with Stripe
+  const session = await stripe.checkout.sessions.retrieve(session_id);
+
+  if (!session || session.payment_status !== "paid") {
+    return res
+      .status(400)
+      .json({ success: false, message: "Payment not completed yet." });
+  }
+
+  // 2️⃣ Find our Payment record
+  const payment = await prisma.payment.findUnique({
+    where: { stripeSessionId: session.id },
   });
 
-  res.send("✅ Payment successful, job activated!");
+  if (!payment) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Payment record not found." });
+  }
+
+  // 3️⃣ Create the job now using stored metadata
+  const jobData = JSON.parse(payment.metadata || "{}");
+  const job = await prisma.job.create({
+    data: {
+      title: jobData.title,
+      description: jobData.description,
+      location: jobData.location,
+      type: jobData.type,
+      orgId: payment.orgId,
+    },
+  });
+
+  // 4️⃣ Update payment status + attach jobId
+  await prisma.payment.update({
+    where: { id: payment.id },
+    data: { status: "SUCCESS", jobId: job.id },
+  });
+
+  return res.json({
+    success: true,
+    message: "Payment verified and job created successfully.",
+    job,
+  });
 }
 
 export async function cancel(_req: Request, res: Response) {
-  res.send("❌ Payment cancelled");
+  res.json({ success: false, message: "Payment cancelled by user." });
 }
