@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as appService from "../services/application.service";
+import fs from "fs";
+import path from "path";
 
 export async function applyForJob(
   req: Request,
@@ -28,6 +30,25 @@ export async function myApplications(
     const user = (req as any).user;
     const apps = await appService.listMine(user.id);
     res.json({ success: true, data: apps });
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function downloadApplicants(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const user = (req as any).user;
+    const { jobId } = req.params;
+    const csv = await appService.downloadApplicants(user.id, jobId!);
+
+    const filePath = path.join("/tmp", `applicants-${jobId}.csv`);
+    fs.writeFileSync(filePath, csv);
+
+    res.download(filePath); // triggers download
   } catch (e) {
     next(e);
   }
