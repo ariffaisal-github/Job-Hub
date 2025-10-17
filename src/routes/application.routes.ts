@@ -12,6 +12,14 @@ r.post(
   requireRole(Role.EMPLOYEE),
   appCtrl.applyForJob
 );
+
 r.get("/my", verifyToken, requireRole(Role.EMPLOYEE), appCtrl.myApplications);
+
+r.get(
+  "/:jobId/applicants/download",
+  verifyToken,
+  requireRole(Role.EMPLOYER),
+  appCtrl.downloadApplicants
+);
 
 export default r;
