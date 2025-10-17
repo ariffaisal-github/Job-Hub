@@ -90,6 +90,12 @@ This spins up:
 ```bash
 docker compose exec api npx prisma studio
 ```
+## Open Prisma Studio for Live Server
+- Put in .env: DATABASE_URL=postgresql://jobhub_za8p_user:FvjggqevV8JMxE6ydrEoGMkwmGB1ca3X@dpg-d3p4mbp5pdvs73acenqg-a.singapore-postgres.render.com/jobhub_za8p
+- ```bash
+  npx prisma studio
+  ```
+- View at http://localhost:5555
 
 ---
 
