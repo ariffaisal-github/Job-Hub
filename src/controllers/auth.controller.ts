@@ -11,13 +11,13 @@ export const signup = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role } = req.body;
     if (!email || !password)
       return res
         .status(400)
         .json({ success: false, message: "Email and password required" });
 
-    const result = await signupService(email, password);
+    const result = await signupService(email, password, role);
     res.status(201).json({ success: true, ...result });
   } catch (err: any) {
     next(err);

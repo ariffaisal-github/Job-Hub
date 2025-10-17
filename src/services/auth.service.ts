@@ -4,8 +4,13 @@ import { generateOtp } from "../utils/otp";
 import bcrypt from "bcryptjs";
 import { env } from "../utils/env";
 import jwt from "jsonwebtoken";
+import { Role } from "@prisma/client";
 
-export async function signupService(email: string, password: string) {
+export async function signupService(
+  email: string,
+  password: string,
+  role: Role = Role.EMPLOYEE
+) {
   // 1️⃣ Check if user already exists
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -22,7 +27,7 @@ export async function signupService(email: string, password: string) {
 
   // 3️⃣ Create user (isVerified = false)
   const user = await prisma.user.create({
-    data: { email, password: hashed },
+    data: { email, password: hashed, role },
   });
 
   // 4️⃣ Generate OTP

@@ -11,6 +11,7 @@ import jobRoutes from "./routes/job.routes";
 import applicationRoutes from "./routes/application.routes";
 import paymentRoutes from "./routes/payment.routes";
 import adminRoutes from "./routes/admin.routes";
+import interviewRoutes from "./routes/interview.routes";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/api/job", jobRoutes);
 app.use("/api/application", applicationRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/interviews", interviewRoutes);
 
 app.use(errorHandler);
 

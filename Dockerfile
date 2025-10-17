@@ -6,17 +6,21 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 
-# Copy Prisma schema and generate client first
+# Copy Prisma schema and generate client
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# Copy the rest of the source
+# Copy source code
 COPY . .
 
 # Build TypeScript
 RUN npm run build
 
+# Copy entrypoint script and make it executable
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
+RUN chmod +x ./docker-entrypoint.sh
+
 EXPOSE 4000
 
-# Always ensure client is generated again at runtime (safety net)
-CMD ["sh", "-c", "npx prisma generate && node dist/server.js"]
+# Run migration + start app
+CMD ["sh", "./docker-entrypoint.sh"]
