@@ -1,10 +1,25 @@
 import app from "./app";
 import { env } from "./utils/env";
+import { seedAdmin } from "./config/seedAdmin";
 
-const port = Number(env.PORT);
-const server = app.listen(port, () => console.log(`🚀 Server on :${port}`));
+async function startServer() {
+  const port = Number(env.PORT);
 
-process.on("SIGTERM", () => {
-  console.log("Shutting down...");
-  server.close(() => process.exit(0));
+  // 🧩 Ensure default admin exists before server starts
+  await seedAdmin();
+
+  const server = app.listen(port, () => {
+    console.log(`🚀 Server running on port ${port}`);
+  });
+
+  // 🧹 Graceful shutdown on SIGTERM (Docker, etc.)
+  process.on("SIGTERM", () => {
+    console.log("Shutting down gracefully...");
+    server.close(() => process.exit(0));
+  });
+}
+
+startServer().catch((err) => {
+  console.error("❌ Failed to start server:", err);
+  process.exit(1);
 });
