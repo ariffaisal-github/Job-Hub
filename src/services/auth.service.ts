@@ -19,7 +19,9 @@ export async function signupService(
     const code = generateOtp(4);
     await redis.setex(`otp:${email}`, 180, code);
     console.log(`Resent OTP for ${email}: ${code}`);
-    return { message: "OTP resent. Please verify your account." };
+    return {
+      message: `OTP resent. Please verify your account. (Since you can't watch logs, I am providing the actual OTP: ${code})`,
+    };
   }
 
   // 2️⃣ Hash password
@@ -47,7 +49,9 @@ export async function signupService(
     },
   });
 
-  return { message: "User created. Verify OTP sent." };
+  return {
+    message: `User created. Verify OTP sent. (Since you can't watch logs, I am providing the actual OTP: ${code})`,
+  };
 }
 
 export async function verifyOtpService(email: string, code: string) {
