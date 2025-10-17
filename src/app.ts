@@ -23,7 +23,8 @@ app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/", (_req, res) => res.redirect("/docs"));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api", health);
 app.use("/api/auth", authRoutes);
