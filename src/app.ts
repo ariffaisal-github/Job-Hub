@@ -13,6 +13,8 @@ import paymentRoutes from "./routes/payment.routes";
 import adminRoutes from "./routes/admin.routes";
 import interviewRoutes from "./routes/interview.routes";
 import messageRoutes from "./routes/message.routes";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 
 const app = express();
 
@@ -20,6 +22,8 @@ app.use(helmet());
 app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/api", health);
 app.use("/api/auth", authRoutes);
