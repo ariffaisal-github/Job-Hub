@@ -21,21 +21,23 @@ enum InterviewStatus {
 }
 
 model User {
-  id                 String         @id @default(uuid())
-  email              String         @unique
-  phone              String?        @unique
-  password           String
-  role               Role           @default(EMPLOYEE)
-  isVerified         Boolean        @default(false)
-  profile            Profile?
-  orgs               OrgMember[]
-  organizationsOwned Organization[] @relation("UserOrganizationsOwned")
-  applications       Application[]
-  refreshTokens      RefreshToken[]
-  otpCodes           OtpCode[]
-  interviewsAsEmployer  Interview[] @relation("EmployerInterview")
-  interviewsAsApplicant Interview[] @relation("ApplicantInterview")
-  createdAt          DateTime       @default(now())
+  id                    String         @id @default(uuid())
+  email                 String         @unique
+  phone                 String?        @unique
+  password              String
+  role                  Role           @default(EMPLOYEE)
+  isVerified            Boolean        @default(false)
+  profile               Profile?
+  orgs                  OrgMember[]
+  organizationsOwned    Organization[] @relation("UserOrganizationsOwned")
+  applications          Application[]
+  refreshTokens         RefreshToken[]
+  otpCodes              OtpCode[]
+  interviewsAsEmployer  Interview[]    @relation("EmployerInterview")
+  interviewsAsApplicant Interview[]    @relation("ApplicantInterview")
+  sentMessages          Message[]      @relation("SentMessages")
+  receivedMessages      Message[]      @relation("ReceivedMessages")
+  createdAt             DateTime       @default(now())
 }
 
 model Profile {
@@ -78,6 +80,7 @@ model Job {
   orgId        String
   applications Application[]
   interviews   Interview[]
+  messages     Message[]     @relation("JobMessages")
   createdAt    DateTime      @default(now())
 }
 
@@ -123,15 +126,28 @@ model Payment {
 }
 
 model Interview {
-  id            String           @id @default(uuid())
-  job           Job              @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  id            String          @id @default(uuid())
+  job           Job             @relation(fields: [jobId], references: [id], onDelete: Cascade)
   jobId         String
-  employer      User             @relation("EmployerInterview", fields: [employerId], references: [id], onDelete: Cascade)
+  employer      User            @relation("EmployerInterview", fields: [employerId], references: [id], onDelete: Cascade)
   employerId    String
-  applicant     User             @relation("ApplicantInterview", fields: [applicantId], references: [id], onDelete: Cascade)
+  applicant     User            @relation("ApplicantInterview", fields: [applicantId], references: [id], onDelete: Cascade)
   applicantId   String
   scheduledTime DateTime
-  status        InterviewStatus  @default(SCHEDULED)
+  status        InterviewStatus @default(SCHEDULED)
   notes         String?
-  createdAt     DateTime         @default(now())
+  createdAt     DateTime        @default(now())
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId   String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId String
+  content    String
+  sentAt     DateTime @default(now())
+  job        Job?     @relation("JobMessages", fields: [jobId], references: [id], onDelete: Cascade)
+  jobId      String?
+  delivered  Boolean  @default(false)
 }
