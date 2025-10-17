@@ -5,17 +5,10 @@ const r = Router();
 
 /**
  * @swagger
- * tags:
- *   name: SignUp and Login
- *   description: User authentication and verification
- */
-
-/**
- * @swagger
  * /api/auth/signup:
  *   post:
  *     summary: Register a new user (Employee, Employer, or Admin)
- *     tags: [Auth]
+ *     tags: [Signup & Login]
  *     requestBody:
  *       required: true
  *       content:
@@ -49,7 +42,7 @@ r.post("/signup", signup);
  * /api/auth/verify:
  *   post:
  *     summary: Verify OTP for user signup
- *     tags: [Auth]
+ *     tags: [Signup & Login]
  *     requestBody:
  *       required: true
  *       content:
@@ -79,7 +72,7 @@ r.post("/verify", verifyOtp);
  * /api/auth/login:
  *   post:
  *     summary: Log in using email/phone and password
- *     tags: [Auth]
+ *     tags: [Signup & Login]
  *     requestBody:
  *       required: true
  *       content:
