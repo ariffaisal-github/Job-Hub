@@ -32,7 +32,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/org", orgRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/applications", applicationRoutes);
-app.use("/api/payment", paymentRoutes);
+app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/interviews", interviewRoutes);
 app.use("/api/messages", messageRoutes);
